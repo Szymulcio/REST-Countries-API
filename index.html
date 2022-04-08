@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;600;800&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/7a2ab3416c.js" crossorigin="anonymous"></script>
     <script defer src="script.js"></script>
     <title>Countries picker</title>
 
@@ -17,14 +18,18 @@
 <body>
     <header class="header">
         <h1 class="header__title">Where in the world?</h1>
-        <Button class="header__theme">Dark mode</Button>
+        <input class="header__theme" type="checkbox"><i class="fa-solid fa-moon"></i>Dark mode</input>
     </header>
     <main>
         <section class="country-filter">
-            <input class="country-filter__country" type="text" name="country-filter" placeholder=" Search for a country...">
+            <div class="country-filter--container">
+                <i class="fa-solid fa-magnifying-glass icon"></i>
+                <input class="country-filter__country" type="text" name="country-filter" placeholder=" Search for a country...">
+            </div>
+
             <!-- <label for="region">Filter by Region</label> -->
             <select class="country-filter__region" id="region" name="region">
-                <option value="Filter by Region">Filter by Region</option>
+                <option value="default">Filter by Region</option>
                 <option value="africa">Africa</option>
                 <option value="america">America</option>
                 <option value="asia">Asia</option>

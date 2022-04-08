@@ -18,6 +18,7 @@ main {
 }
 
 .header {
+  position: relative;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -28,12 +29,33 @@ main {
   -webkit-box-pack: justify;
       -ms-flex-pack: justify;
           justify-content: space-between;
-  margin: 2rem 1rem;
+  padding: 2rem 1rem;
   background-color: white;
+  -webkit-box-shadow: 0px 10px 20px -20px #858585;
+          box-shadow: 0px 10px 20px -20px #858585;
+  z-index: 1;
 }
 
 .header__title {
   font-size: 20px;
+  font-weight: 800;
+}
+
+.country-filter--container {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  width: 100%;
+}
+
+.icon {
+  padding: 3rem;
+  min-width: 50px;
+  position: absolute;
+  color: #858585;
 }
 
 .country-filter {
@@ -50,11 +72,11 @@ main {
 }
 
 .country-filter__country {
-  width: 90%;
   max-width: 400px;
-  height: 3rem;
+  width: 100%;
+  height: 3.5rem;
   margin: 2rem 1rem;
-  padding: 1rem;
+  padding: 1.5rem 0 1.5rem 5rem;
   border: none;
   border-radius: 5px;
   -webkit-box-shadow: 0px 0px 20px -10px #858585;
@@ -80,8 +102,8 @@ main {
 .country-filter__region {
   width: 50%;
   max-width: 400px;
-  height: 3rem;
-  margin: 2rem 1rem;
+  height: 3.5rem;
+  margin: 0 1rem 1rem;
   padding: 1rem;
   color: #111517;
   font-size: inherit;
@@ -118,7 +140,7 @@ main {
 
 .country {
   height: 350px;
-  width: 250px;
+  width: 280px;
   background-color: white;
   margin: 2rem;
   border-radius: 10px;
@@ -128,7 +150,7 @@ main {
 
 .country__img {
   height: 150px;
-  width: 250px;
+  width: 280px;
   border-radius: 10px 10px 0 0;
 }
 

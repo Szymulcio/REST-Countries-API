@@ -1,5 +1,7 @@
 const countryContainer = document.querySelector(".countries");
 const countryTemplate = document.querySelector(".country--template");
+const coutryFilterInput = document.querySelector(".country-filter__country");
+const countryFilterRegion = document.querySelector(".country-filter__region");
 
 async function getCountryDataAll() {
 	const res = await fetch("https://restcountries.com/v3.1/all");
@@ -26,7 +28,6 @@ async function getCountryDataByRegion(region) {
 
 function renderCountry(data) {
 	const countryEl = document.importNode(countryTemplate.content, true);
-
 	countryEl.querySelector("img").src = data.flags.png;
 	countryEl.querySelector("h2").textContent = data.name.common;
 	countryEl.querySelector(
@@ -45,3 +46,16 @@ function renderCountry(data) {
 // getCountryDataAll();
 // getCountryDataByName("germany");
 getCountryDataByRegion("europe");
+
+coutryFilterInput.addEventListener("change", function () {
+	countryContainer.innerHTML = "";
+	const countryName = coutryFilterInput.value;
+	if (countryName !== "") getCountryDataByName(countryName);
+	else getCountryDataAll();
+});
+
+countryFilterRegion.addEventListener("change", function (e) {
+	countryContainer.innerHTML = "";
+	if (this.value !== "default") getCountryDataByRegion(this.value);
+	else getCountryDataAll();
+});
