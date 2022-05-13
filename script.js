@@ -1,21 +1,30 @@
-const country = document.querySelector(".country");
 const countryContainer = document.querySelector(".countries");
 const countryTemplate = document.querySelector(".country--template");
-const coutryFilterInput = document.querySelector(".country-filter__country");
+const countryDetailContainer = document.querySelector(".country--detail");
+
+const countryFilterInput = document.querySelector(".country-filter__country");
+const countryFilterContainer = document.querySelector(".country-filter--container");
 const countryFilterRegion = document.querySelector(".country-filter__region");
+
+const backBtn = document.querySelector(".btn--back");
+
+let country = document.querySelector(".country");
+let neighbourCountryBtn = document.querySelectorAll(".btn--neighbour");
+
+let countryData;
 
 async function getJSON(url) {
 	const response = await fetch(url);
 	return response.json();
 }
 
-async function getCountryDataAll() {
-	const res = await fetch("https://restcountries.com/v3.1/all");
-	const data = await res.json();
+async function getCountryData(url) {
+	const data = await getJSON(url);
 
 	for (const country of data) {
 		renderCountry(country);
 	}
+	countryData = data;
 }
 
 async function getCountryDataByName(name) {
@@ -26,20 +35,24 @@ async function getCountryDataByName(name) {
 	}
 }
 
-async function getCountryDataByRegion(region) {
-	const res = await fetch(`https://restcountries.com/v3.1/region/${region}`);
-	const data = await res.json();
-	console.log(data);
-	for (const country of data) {
-		renderCountry(country);
-	}
-}
+// async function getCountryDataByRegion(region) {
+// 	const res = await fetch(`https://restcountries.com/v3.1/region/${region}`);
+// 	const data = await res.json();
+// 	console.log(data);
+// 	for (const country of data) {
+// 		renderCountry(country);
+// 	}
+// }
 
 function renderCountry(data) {
 	const countryEl = document.importNode(countryTemplate.content, true);
 
+	countryEl.querySelector(".country").dataset.name = data.name.common;
+	countryEl.querySelector(".country").dataset.region = data.region;
+
 	countryEl.querySelector("img").src = data.flags.png;
 	countryEl.querySelector("h2").textContent = data.name.common;
+
 	countryEl.querySelector(
 		".country__row--population"
 	).innerHTML = `<span>Population:</span> ${new Intl.NumberFormat(navigator.language).format(
@@ -53,17 +66,14 @@ function renderCountry(data) {
 	).innerHTML = `<span>Capital:</span> ${data.capital}`;
 
 	countryContainer.append(countryEl);
+	country = document.querySelectorAll(".country");
 }
 
-async function renderCoutryDetails(countryName) {
-	const res = await fetch(`https://restcountries.com/v3.1/name/${countryName}`);
-	const data = await res.json();
-	const countryData = data[0];
-	console.log(countryData);
-
+async function renderCoutryDetails(data) {
+	console.log(data);
 	function currencyFinder() {
 		let currencyList = "";
-		for (const value of Object.values(countryData.currencies)) {
+		for (const value of Object.values(data.currencies)) {
 			currencyList += ` ${value.name},`;
 		}
 		return currencyList.slice(0, -1);
@@ -71,72 +81,115 @@ async function renderCoutryDetails(countryName) {
 
 	function languagesFinder() {
 		let languageList = "";
-		for (const value of Object.values(countryData.languages)) {
+		for (const value of Object.values(data.languages)) {
 			languageList += ` ${value},`;
 		}
 		return languageList.slice(0, -1);
 	}
 
+	// TODO : ADD FINFING NEIGHBOURS BY CC3 CODE
 	async function borderFinder() {
-		let borderList = "";
-		for (const value of Object.values(countryData.borders)) {
-			console.log(value);
-			const neigbour = await getJSON(`https://restcountries.com/v2/alpha?codes=${value}`);
-			borderList += ` ${neigbour[0].name},`;
-		}
-		return borderList.slice(0, -1);
+		let borderList = "<ul class='country__row country__row--neighbour'>";
+		if (data.borders) {
+			for (const value of Object.values(data.borders)) {
+				const neigbour = countryData.filter(el => el.cca3 === value);
+				borderList += `<li><button class="btn btn--neighbour">${neigbour[0].name.common}</button></li>`;
+			}
+		} else
+			borderList = `<p class='country__row'>${data.name.common} doesn't have border countries</p>`;
+		borderList += "</ul>";
+		return borderList;
 	}
 
-	countryContainer.innerHTML = "";
-	const html = `<section class="country-detail">
-	<img class="country__img" src="${countryData.flags.png}" alt="flag">
+	const html = `
+	<img class="country__img country__img--detail" src="${data.flags.png}" alt="flag">
 	<div class="country__data">
-		<h2 class="country__row country__row--name">${countryData.name.common}</h2>
+		<h2 class="country__row country__row--name">${data.name.common}</h2>
 		<p class="country__row country__row--population"><span>Native Name:</span> ${
-			countryData.altSpellings[1]
+			data.altSpellings[1]
 		}</p>
-		<p class="country__row country__row--population"><span>Population:</span> ${
-			countryData.population
-		}</p>
-		<p class="country__row"><span>Region:</span> ${countryData.region}</p>
-		<p class="country__row"><span>Sub Region:</span> ${countryData.subregion}</p>
-		<p class="country__row"><span>Capital:</span> ${countryData.capital}</p>
+		<p class="country__row country__row--population"><span>Population:</span> ${data.population}</p>
+		<p class="country__row"><span>Region:</span> ${data.region}</p>
+		<p class="country__row"><span>Sub Region:</span> ${data.subregion}</p>
+		<p class="country__row"><span>Capital:</span> ${data.capital}</p>
 		<p class="country__row" style="opacity:0;"><span>Capital:</span></p>
-		<p class="country__row"><span>Top Level Domain:</span> ${countryData.tld}</p>
+		<p class="country__row"><span>Top Level Domain:</span> ${data.tld}</p>
 		<p class="country__row"><span>Currencies:</span>${currencyFinder()}</p>
 		<p class="country__row"><span>Languages:</span>${languagesFinder()}</p>
 		<h3 class="country__row"><span>Border Countries:</span></h3>
-		<p class="country__row">${await borderFinder()}</p>
-		
-	</div>
-</section>
-	`;
-	countryContainer.insertAdjacentHTML("afterbegin", html);
+		${await borderFinder()}		
+		<p class="country__row" style="opacity:0;"><span>Capital:</span></p>
+	</div>`;
+
+	countryDetailContainer.insertAdjacentHTML("afterbegin", html);
+	neighbourCountryBtn = document.querySelectorAll(".btn--neighbour");
 }
 
-// getCountryDataAll();
-// getCountryDataByName("germany");
-getCountryDataByRegion("europe");
+function changeDisplay() {
+	countryContainer.classList.toggle("hidden");
+	countryFilterContainer.classList.toggle("hidden");
+	countryFilterRegion.classList.toggle("hidden");
+
+	backBtn.classList.toggle("hidden");
+}
+
+function hideCountries() {
+	country.forEach(c => c.classList.add("hidden"));
+}
+
+function showCountries(region = "", name = "") {
+	country.forEach(c => {
+		if (c.dataset.region === region || c.dataset.name === name) c.classList.remove("hidden");
+	});
+}
 
 //////////////////
 // Event listeners
-coutryFilterInput.addEventListener("input", function () {
+/////////////////
+
+/// Name filter
+countryFilterInput.addEventListener("input", function () {
 	countryContainer.innerHTML = "";
-	const countryName = coutryFilterInput.value;
+	const countryName = countryFilterInput.value;
 	if (countryName !== "") getCountryDataByName(countryName);
-	else getCountryDataAll();
+	else getCountryData("https://restcountries.com/v3.1/all");
 });
 
-countryFilterRegion.addEventListener("change", function (e) {
-	countryContainer.innerHTML = "";
-	if (this.value !== "default") getCountryDataByRegion(this.value);
-	else getCountryDataAll();
+/// Region filter
+countryFilterRegion.addEventListener("change", function () {
+	hideCountries();
+	if (this.value === "default") {
+		showCountries();
+	} else {
+		showCountries(this.value);
+	}
 });
 
+/// Detail country
 countryContainer.addEventListener("click", function (e) {
-	// document.querySelector("main").innerHTML = "";
 	const clicked = e.target.closest(".country");
-	console.log(clicked);
 	const selectedCountryName = clicked.querySelector("h2").textContent;
-	renderCoutryDetails(selectedCountryName);
+
+	const selectedCountry = countryData.filter(el => el.name.common === selectedCountryName);
+	renderCoutryDetails(selectedCountry[0]);
+	changeDisplay();
 });
+
+/// Back to preview display
+backBtn.addEventListener("click", function () {
+	countryDetailContainer.innerHTML = "";
+
+	changeDisplay();
+});
+
+/// Detail neighbour
+countryDetailContainer.addEventListener("click", function (e) {
+	if (e.target.classList.contains("btn--neighbour")) {
+		countryDetailContainer.innerHTML = "";
+
+		const selectedCountry = countryData.filter(el => el.name.common === e.target.innerHTML);
+		renderCoutryDetails(selectedCountry[0]);
+	}
+});
+
+getCountryData("https://restcountries.com/v3.1/all");

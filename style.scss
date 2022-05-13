@@ -110,17 +110,71 @@ main {
 		width: 280px;
 		border-radius: 10px 10px 0 0;
 		// box-shadow: 0px -5px 20px -10px rgba(133, 133, 133, 1);
+
+		&--detail {
+			max-width: 350px;
+			width: auto;
+			height: auto;
+		}
+	}
+
+	&__data {
+		display: flex;
+		flex-direction: column;
 	}
 
 	&__row {
-		margin: 1rem;
+		margin: 0.5rem 0 0.5rem 1rem;
 
 		&--name {
+			margin: 1rem 0 0.5rem 1rem;
 			font-weight: 800;
+		}
+
+		&--neighbour {
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+			justify-items: center;
+			align-content: center;
+
+			& li {
+				list-style: none;
+			}
 		}
 
 		span {
 			font-weight: 600;
 		}
 	}
+
+	&--detail {
+		margin: 1rem auto;
+		max-width: 320px;
+	}
+}
+
+.btn {
+	display: inline-block;
+	padding: 8px 16px;
+	background-color: white;
+	cursor: pointer;
+	font-size: inherit;
+	font-family: inherit;
+	border: none;
+	border-radius: 2px;
+	box-shadow: 0px 0px 5px #858585;
+
+	&--back {
+		margin: 3rem;
+	}
+
+	&--neighbour {
+		place-self: center;
+		margin: 0px 16px 16px 0;
+	}
+}
+
+.hidden {
+	display: none;
 }
