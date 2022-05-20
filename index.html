@@ -30,15 +30,17 @@
 
             <!-- <label for="region">Filter by Region</label> -->
             <select class="country-filter__region" id="region" name="region">
-                <option value="default">Filter by Region</option>
+                <option value="">Filter by Region</option>
                 <option value="Africa">Africa</option>
                 <option value="Americas">America</option>
                 <option value="Asia">Asia</option>
                 <option value="Europe">Europe</option>s
                 <option value="Oceania">Oceania</option>
             </select>
+            <button class="btn btn--reset">Reset filters</button>
             <button class="btn btn--back hidden">Back</button>
         </section>
+        <h2 class="countries--message hidden">No countries were found!</h2>
         <section class="countries">
             <template class="country--template">
                 <div class="country" data-name="" data-region="">
@@ -52,7 +54,24 @@
                 </div>
             </template>
         </section>
-        <section class="country--detail"></section>
+        <section class="country--detail">
+            <!-- <img class="country__img country__img--detail" src="" alt="flag">
+            <div class="country__data">
+                <h2 class="country__row country__row--name"></h2>
+                <p class="country__row country__row--population"><span>Native Name:</span></p>
+                <p class="country__row country__row--population"><span>Population:</span></p>
+                <p class="country__row"><span>Region:</span></p>
+                <p class="country__row"><span>Sub Region:</span></p>
+                <p class="country__row"><span>Capital:</span></p>
+                <p class="country__row" style="opacity:0;"><span>Capital:</span></p>
+                <p class="country__row"><span>Top Level Domain:</span></p>
+                <p class="country__row"><span>Currencies:</span></p>
+                <p class="country__row"><span>Languages:</span></p>
+                <h3 class="country__row"><span>Border Countries:</span></h3>
+                <p class="country__row" style="opacity:0;"><span>Capital:</span>
+                <p>
+            </div> -->
+        </section>
     </main>
 </body>
 

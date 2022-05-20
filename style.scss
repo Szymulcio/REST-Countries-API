@@ -33,12 +33,6 @@ main {
 	}
 }
 
-.country-filter--container {
-	display: flex;
-	align-items: center;
-	width: 100%;
-}
-
 .icon {
 	padding: 3rem;
 	min-width: 50px;
@@ -47,16 +41,15 @@ main {
 }
 
 .country-filter {
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	// margin: 2rem 1rem;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr 1fr;
 
 	&__country {
 		max-width: 400px;
 		width: 100%;
 		height: 3.5rem;
-		margin: 2rem 1rem;
+		margin: 1.5rem 1rem;
 		padding: 1.5rem 0 1.5rem 5rem;
 		border: none;
 		border-radius: 5px;
@@ -68,10 +61,8 @@ main {
 	}
 
 	&__region {
-		width: 50%;
-		max-width: 400px;
 		height: 3.5rem;
-		margin: 0 1rem 1rem;
+		margin: 0 0 0 1rem;
 		padding: 1rem;
 		color: hsl(200, 15%, 8%);
 		font-size: inherit;
@@ -88,6 +79,13 @@ main {
 			font-size: inherit;
 			font-family: inherit;
 		}
+	}
+
+	&--container {
+		display: flex;
+		align-items: center;
+		width: 100%;
+		grid-column: 1 / span 2;
 	}
 }
 
@@ -172,6 +170,12 @@ main {
 	&--neighbour {
 		place-self: center;
 		margin: 0px 16px 16px 0;
+	}
+
+	&--reset {
+		// width: 150px;
+		height: 3.5rem;
+		margin: 0 1rem 0 1rem;
 	}
 }
 

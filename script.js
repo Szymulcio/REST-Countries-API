@@ -7,11 +7,12 @@ const countryFilterContainer = document.querySelector(".country-filter--containe
 const countryFilterRegion = document.querySelector(".country-filter__region");
 
 const backBtn = document.querySelector(".btn--back");
+const resetBtn = document.querySelector(".btn--reset");
 
 let country = document.querySelector(".country");
 let neighbourCountryBtn = document.querySelectorAll(".btn--neighbour");
 
-let countryData;
+let allCountryData;
 
 async function getJSON(url) {
 	const response = await fetch(url);
@@ -20,11 +21,14 @@ async function getJSON(url) {
 
 async function getCountryData(url) {
 	const data = await getJSON(url);
+	allCountryData = data;
+	allCountryData.sort((a, b) =>
+		a.name.common > b.name.common ? 1 : b.name.common > a.name.common ? -1 : 0
+	);
 
-	for (const country of data) {
+	for (const country of allCountryData) {
 		renderCountry(country);
 	}
-	countryData = data;
 }
 
 async function getCountryDataByName(name) {
@@ -35,19 +39,10 @@ async function getCountryDataByName(name) {
 	}
 }
 
-// async function getCountryDataByRegion(region) {
-// 	const res = await fetch(`https://restcountries.com/v3.1/region/${region}`);
-// 	const data = await res.json();
-// 	console.log(data);
-// 	for (const country of data) {
-// 		renderCountry(country);
-// 	}
-// }
-
 function renderCountry(data) {
 	const countryEl = document.importNode(countryTemplate.content, true);
 
-	countryEl.querySelector(".country").dataset.name = data.name.common;
+	countryEl.querySelector(".country").dataset.name = data.name.common.toLowerCase();
 	countryEl.querySelector(".country").dataset.region = data.region;
 
 	countryEl.querySelector("img").src = data.flags.png;
@@ -70,30 +65,29 @@ function renderCountry(data) {
 }
 
 async function renderCoutryDetails(data) {
-	console.log(data);
+
 	function currencyFinder() {
 		let currencyList = "";
-		for (const value of Object.values(data.currencies)) {
-			currencyList += ` ${value.name},`;
+		for (const currency of Object.values(data.currencies)) {
+			currencyList += ` ${currency.name},`;
 		}
 		return currencyList.slice(0, -1);
 	}
 
-	function languagesFinder() {
+	function languageFinder() {
 		let languageList = "";
-		for (const value of Object.values(data.languages)) {
-			languageList += ` ${value},`;
+		for (const language of Object.values(data.languages)) {
+			languageList += ` ${language},`;
 		}
 		return languageList.slice(0, -1);
 	}
 
-	// TODO : ADD FINFING NEIGHBOURS BY CC3 CODE
-	async function borderFinder() {
+	function borderFinder() {
 		let borderList = "<ul class='country__row country__row--neighbour'>";
 		if (data.borders) {
-			for (const value of Object.values(data.borders)) {
-				const neigbour = countryData.filter(el => el.cca3 === value);
-				borderList += `<li><button class="btn btn--neighbour">${neigbour[0].name.common}</button></li>`;
+			for (const borderCountryCode of Object.values(data.borders)) {
+				const borderCountry = allCountryData.filter(country => country.cca3 === borderCountryCode);
+				borderList += `<li><button class="btn btn--neighbour">${borderCountry[0].name.common}</button></li>`;
 			}
 		} else
 			borderList = `<p class='country__row'>${data.name.common} doesn't have border countries</p>`;
@@ -115,9 +109,9 @@ async function renderCoutryDetails(data) {
 		<p class="country__row" style="opacity:0;"><span>Capital:</span></p>
 		<p class="country__row"><span>Top Level Domain:</span> ${data.tld}</p>
 		<p class="country__row"><span>Currencies:</span>${currencyFinder()}</p>
-		<p class="country__row"><span>Languages:</span>${languagesFinder()}</p>
+		<p class="country__row"><span>Languages:</span>${languageFinder()}</p>
 		<h3 class="country__row"><span>Border Countries:</span></h3>
-		${await borderFinder()}		
+		${borderFinder()}		
 		<p class="country__row" style="opacity:0;"><span>Capital:</span></p>
 	</div>`;
 
@@ -131,15 +125,25 @@ function changeDisplay() {
 	countryFilterRegion.classList.toggle("hidden");
 
 	backBtn.classList.toggle("hidden");
+	resetBtn.classList.toggle("hidden");
 }
 
 function hideCountries() {
 	country.forEach(c => c.classList.add("hidden"));
 }
 
-function showCountries(region = "", name = "") {
+function filterCountries() {
+	let message = document.querySelector(".countries--message");
+	const filteredName = countryFilterInput.value;
+	const filteredRegion = countryFilterRegion.value;
+
+	message.classList.remove("hidden");
+
 	country.forEach(c => {
-		if (c.dataset.region === region || c.dataset.name === name) c.classList.remove("hidden");
+		if (c.dataset.region.includes(filteredRegion) && c.dataset.name.includes(filteredName)) {
+			c.classList.remove("hidden");
+			message.classList.add("hidden");
+		}
 	});
 }
 
@@ -149,20 +153,20 @@ function showCountries(region = "", name = "") {
 
 /// Name filter
 countryFilterInput.addEventListener("input", function () {
-	countryContainer.innerHTML = "";
-	const countryName = countryFilterInput.value;
-	if (countryName !== "") getCountryDataByName(countryName);
-	else getCountryData("https://restcountries.com/v3.1/all");
+	hideCountries();
+	filterCountries();
 });
 
 /// Region filter
 countryFilterRegion.addEventListener("change", function () {
 	hideCountries();
-	if (this.value === "default") {
-		showCountries();
-	} else {
-		showCountries(this.value);
-	}
+	filterCountries();
+});
+
+resetBtn.addEventListener("click", function () {
+	countryFilterInput.value = "";
+	countryFilterRegion.value = "";
+	filterCountries();
 });
 
 /// Detail country
@@ -170,7 +174,8 @@ countryContainer.addEventListener("click", function (e) {
 	const clicked = e.target.closest(".country");
 	const selectedCountryName = clicked.querySelector("h2").textContent;
 
-	const selectedCountry = countryData.filter(el => el.name.common === selectedCountryName);
+	const selectedCountry = allCountryData.filter(el => el.name.common === selectedCountryName);
+	
 	renderCoutryDetails(selectedCountry[0]);
 	changeDisplay();
 });
@@ -187,7 +192,7 @@ countryDetailContainer.addEventListener("click", function (e) {
 	if (e.target.classList.contains("btn--neighbour")) {
 		countryDetailContainer.innerHTML = "";
 
-		const selectedCountry = countryData.filter(el => el.name.common === e.target.innerHTML);
+		const selectedCountry = allCountryData.filter(el => el.name.common === e.target.innerHTML);
 		renderCoutryDetails(selectedCountry[0]);
 	}
 });
