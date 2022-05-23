@@ -1,3 +1,5 @@
+const html = document.querySelector("html");
+
 const countryContainer = document.querySelector(".countries");
 const countryTemplate = document.querySelector(".country--template");
 const countryDetailContainer = document.querySelector(".country--detail");
@@ -8,6 +10,7 @@ const countryFilterRegion = document.querySelector(".country-filter__region");
 
 const backBtn = document.querySelector(".btn--back");
 const resetBtn = document.querySelector(".btn--reset");
+const themeBtn = document.querySelector(".btn--theme");
 
 let country = document.querySelector(".country");
 let neighbourCountryBtn = document.querySelectorAll(".btn--neighbour");
@@ -65,7 +68,6 @@ function renderCountry(data) {
 }
 
 async function renderCoutryDetails(data) {
-
 	function currencyFinder() {
 		let currencyList = "";
 		for (const currency of Object.values(data.currencies)) {
@@ -86,7 +88,9 @@ async function renderCoutryDetails(data) {
 		let borderList = "<ul class='country__row country__row--neighbour'>";
 		if (data.borders) {
 			for (const borderCountryCode of Object.values(data.borders)) {
-				const borderCountry = allCountryData.filter(country => country.cca3 === borderCountryCode);
+				const borderCountry = allCountryData.filter(
+					country => country.cca3 === borderCountryCode
+				);
 				borderList += `<li><button class="btn btn--neighbour">${borderCountry[0].name.common}</button></li>`;
 			}
 		} else
@@ -99,10 +103,8 @@ async function renderCoutryDetails(data) {
 	<img class="country__img country__img--detail" src="${data.flags.png}" alt="flag">
 	<div class="country__data">
 		<h2 class="country__row country__row--name">${data.name.common}</h2>
-		<p class="country__row country__row--population"><span>Native Name:</span> ${
-			data.altSpellings[1]
-		}</p>
-		<p class="country__row country__row--population"><span>Population:</span> ${data.population}</p>
+		<p class="country__row"><span>Native Name:</span> ${data.altSpellings[1]}</p>
+		<p class="country__row"><span>Population:</span> ${data.population}</p>
 		<p class="country__row"><span>Region:</span> ${data.region}</p>
 		<p class="country__row"><span>Sub Region:</span> ${data.subregion}</p>
 		<p class="country__row"><span>Capital:</span> ${data.capital}</p>
@@ -112,7 +114,6 @@ async function renderCoutryDetails(data) {
 		<p class="country__row"><span>Languages:</span>${languageFinder()}</p>
 		<h3 class="country__row"><span>Border Countries:</span></h3>
 		${borderFinder()}		
-		<p class="country__row" style="opacity:0;"><span>Capital:</span></p>
 	</div>`;
 
 	countryDetailContainer.insertAdjacentHTML("afterbegin", html);
@@ -151,6 +152,11 @@ function filterCountries() {
 // Event listeners
 /////////////////
 
+/// Theme switcher
+themeBtn.addEventListener("click", function () {
+	html.dataset.theme = html.dataset.theme === "theme-light" ? "theme-dark" : "theme-light";
+});
+
 /// Name filter
 countryFilterInput.addEventListener("input", function () {
 	hideCountries();
@@ -175,7 +181,7 @@ countryContainer.addEventListener("click", function (e) {
 	const selectedCountryName = clicked.querySelector("h2").textContent;
 
 	const selectedCountry = allCountryData.filter(el => el.name.common === selectedCountryName);
-	
+
 	renderCoutryDetails(selectedCountry[0]);
 	changeDisplay();
 });
